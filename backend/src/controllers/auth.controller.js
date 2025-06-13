@@ -52,11 +52,11 @@ export async function signup(req, res) {
       expiresIn: "7d",
     });
 
-    res.cookie("jwt", token, {
+    res.cookie("accessToken", token, {
       maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true,
-      sameSite: "strict",
-      secure: process.env.NODE_ENV === "production",
+      sameSite: "None", // ✅ allow cross-origin
+      secure: process.env.NODE_ENV === "production", // ✅ must be true in production
     });
 
     await sendMail(
@@ -98,13 +98,11 @@ export async function login(req, res) {
       expiresIn: "7d",
     });
 
-    const isProduction = process.env.NODE_ENV === "production";
-
-    res.cookie("jwt", token, {
+    res.cookie("accessToken", token, {
       maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true,
-      sameSite: isProduction ? "strict" : "lax",
-      secure: isProduction,
+      sameSite: "None",
+      secure: process.env.NODE_ENV === "production",
     });
 
     res.status(200).json({ success: true, user });
@@ -116,7 +114,10 @@ export async function login(req, res) {
 
 // ------------------ Logout ------------------
 export function logout(req, res) {
-  res.clearCookie("jwt");
+  res.clearCookie("accessToken", {
+    sameSite: "None",
+    secure: process.env.NODE_ENV === "production",
+  });
   res.status(200).json({ success: true, message: "Logout successful" });
 }
 
@@ -184,14 +185,13 @@ export const forgotPassword = async (req, res) => {
   const resetURL = `http://localhost:5173/reset-password/${resetToken}`;
 
   await sendMail(
-  user.email,
-  "Reset Your Password",
-  undefined, // optional plain text version
-  `<p>Click the link below to reset your password:</p>
-   <a href="${resetURL}">${resetURL}</a>
-   <p>This link will expire in 15 minutes.</p>`
-);
-
+    user.email,
+    "Reset Your Password",
+    undefined,
+    `<p>Click the link below to reset your password:</p>
+     <a href="${resetURL}">${resetURL}</a>
+     <p>This link will expire in 15 minutes.</p>`
+  );
 
   res.status(200).json({ message: "Password reset email sent" });
 };
