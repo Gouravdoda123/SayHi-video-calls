@@ -13,16 +13,16 @@ import { connectDB } from "./lib/db.js";
 const app = express();
 const PORT = process.env.PORT || 5001;
 
-// ✅ Allow multiple origins (dev + production)
+// ✅ Allowed frontend origins
 const allowedOrigins = [
   "http://localhost:5173",
-  "say-hi-video-calls.vercel.app"
+  "https://say-hi-video-calls.vercel.app"
 ];
 
+// ✅ CORS middleware
 app.use(
   cors({
     origin: function (origin, callback) {
-      // Allow requests with no origin (like mobile apps, curl, Postman)
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
@@ -33,17 +33,22 @@ app.use(
   })
 );
 
-// ✅ Middleware
+// ✅ Other middlewares
 app.use(express.json());
 app.use(cookieParser());
 
-// ✅ Routes
+// ✅ API routes
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api", chatbotRoutes);
 
-// ✅ Start server
+// ✅ Root route to test server
+app.get("/", (req, res) => {
+  res.send("✅ SayHi backend is running");
+});
+
+// ✅ Start the server
 app.listen(PORT, () => {
   console.log(`✅ Server is running on port ${PORT}`);
   connectDB();
