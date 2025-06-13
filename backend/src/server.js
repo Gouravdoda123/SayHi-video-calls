@@ -26,6 +26,7 @@ app.use(
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
+        console.log("❌ Blocked by CORS:", origin); // Optional for debug
         callback(new Error("Not allowed by CORS"));
       }
     },
@@ -33,22 +34,22 @@ app.use(
   })
 );
 
-// ✅ Other middlewares
+// ✅ Middleware
 app.use(express.json());
 app.use(cookieParser());
 
-// ✅ API routes
+// ✅ API Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api", chatbotRoutes);
 
-// ✅ Root route to test server
+// ✅ Root route
 app.get("/", (req, res) => {
   res.send("✅ SayHi backend is running");
 });
 
-// ✅ Start the server
+// ✅ Start server
 app.listen(PORT, () => {
   console.log(`✅ Server is running on port ${PORT}`);
   connectDB();
