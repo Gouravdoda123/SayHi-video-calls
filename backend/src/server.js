@@ -16,7 +16,7 @@ const PORT = process.env.PORT || 5001;
 // ✅ Allow multiple origins (dev + production)
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://sayhi.vercel.app"
+  "say-hi-video-calls.vercel.app"
 ];
 
 app.use(
