@@ -23,10 +23,14 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
+      if (
+        !origin || // for server-to-server or curl/postman
+        allowedOrigins.includes(origin) ||
+        origin.endsWith(".vercel.app") // ✅ Allow all Vercel preview URLs
+      ) {
         callback(null, true);
       } else {
-        console.log("❌ Blocked by CORS:", origin); // Optional for debug
+        console.log("❌ Blocked by CORS:", origin);
         callback(new Error("Not allowed by CORS"));
       }
     },
