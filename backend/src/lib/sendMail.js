@@ -1,37 +1,34 @@
-// mailer.js
+// sendMail.js
 
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
 
-// Load environment variables from .env file
 dotenv.config();
 
-// Create a transporter using Gmail SMTP and env variables
+// Use Gmail service directly
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port:465,
-  secure: true, // false for TLS
+  service: "Gmail", // ✅ Gmail-specific shortcut
   auth: {
     user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
+    pass: process.env.EMAIL_PASS, // ✅ Use App Password here, not Gmail password
   },
 });
 
-// Exported async function to send mail
+// Function to send email
 export async function sendMail(to, subject, text, html) {
   try {
     const info = await transporter.sendMail({
-      from: `"Say Hi" <${process.env.EMAIL_USER}>`,
+      from: `"SayHi" <${process.env.EMAIL_USER}>`,
       to,
       subject,
       text,
       html,
     });
 
-    console.log("Message sent:", info.messageId);
+    console.log("📧 Email sent:", info.messageId);
     return info;
   } catch (error) {
-    console.error("Error sending mail:", error);
+    console.error("❌ Error sending email:", error);
     throw error;
   }
 }

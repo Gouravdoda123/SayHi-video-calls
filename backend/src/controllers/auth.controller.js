@@ -55,8 +55,8 @@ export async function signup(req, res) {
     res.cookie("accessToken", token, {
       maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true,
-      sameSite: "None", // ✅ allow cross-origin
-      secure: process.env.NODE_ENV === "production", // ✅ must be true in production
+      sameSite: "None",
+      secure: process.env.NODE_ENV === "production",
     });
 
     await sendMail(
@@ -183,18 +183,23 @@ export const forgotPassword = async (req, res) => {
   await user.save();
 
   const resetURL = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
+  console.log("Reset URL generated:", resetURL);
 
+  try {
+    await sendMail(
+      user.email,
+      "Reset Your Password",
+      undefined,
+      `<p>Click the link below to reset your password:</p>
+       <a href="${resetURL}">${resetURL}</a>
+       <p>This link will expire in 15 minutes.</p>`
+    );
 
-  await sendMail(
-    user.email,
-    "Reset Your Password",
-    undefined,
-    `<p>Click the link below to reset your password:</p>
-     <a href="${resetURL}">${resetURL}</a>
-     <p>This link will expire in 15 minutes.</p>`
-  );
-
-  res.status(200).json({ message: "Password reset email sent" });
+    res.status(200).json({ message: "Password reset email sent" });
+  } catch (error) {
+    console.error("SendMail failed:", error.message);
+    res.status(500).json({ message: "Failed to send reset email" });
+  }
 };
 
 // ------------------ Reset Password ------------------

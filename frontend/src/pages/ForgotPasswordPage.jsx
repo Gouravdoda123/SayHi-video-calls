@@ -15,10 +15,12 @@ const ForgotPasswordPage = () => {
     setMessage(null);
 
     try {
-      const res = await fetch("http://localhost:5001/api/auth/forgot-password", {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/auth/forgot-password`, {
+
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
+        credentials: "include"
       });
 
       const data = await res.json();
