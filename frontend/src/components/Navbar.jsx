@@ -37,13 +37,11 @@ const Navbar = () => {
           <ThemeSelector />
 
           {/* Profile Avatar Link */}
-          <Link to="/profile">
             <div className="avatar cursor-pointer">
               <div className="w-9 rounded-full">
                 <img src={authUser?.profilePic} alt="User Avatar" />
               </div>
             </div>
-          </Link>
 
           {/* Logout button */}
           <button className="btn btn-ghost btn-circle" onClick={logoutMutation}>
